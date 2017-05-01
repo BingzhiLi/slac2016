@@ -1,0 +1,4 @@
+this directory contains the fhicl file which generate the simulation data
+ 
+to run the simulation, run:
+gm2 -c slacTestBeam.fcl -n the_Nevents_you_want -o name_of_output_root.root

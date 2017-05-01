@@ -1,0 +1,4 @@
+this directory contains the analysis code about the simulation data
+
+the MyAnalyzer_module.cc is at bzli/SLAC2016/srcs/gm2calo/analyses/
+the myAnalyzer.fcl is the excute fhicl file to call art run the MyAnalyzer_module.cc (also at bzli/SLAC2016/srcs/gm2calo/analyses/)

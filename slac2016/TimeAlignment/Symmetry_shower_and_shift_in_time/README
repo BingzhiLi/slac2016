@@ -1,0 +1,8 @@
+run1936：电子束击中xtal#24的中心
+run1935：电子束击中xtal#24的中心偏左4mm（即向xtal#25移动4mm）
+run1937：电子束击中xtal#24的中心偏右4mm（即向xtal#23移动4mm）
+
+目的：得到#23，#25的fiber offset time和shower time
+     run1936：xtal#24周围3*3的beamTimeDiff
+     run1935-1937：xtal#23\24\25的beamT分布（需归一化，因为各自的事例数不同）
+     run1935-1937：deltaE vs deltaT (#23 vs #25)

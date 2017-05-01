@@ -1,0 +1,25 @@
+// fhicl for slac test beam analyzer for data analysis challenge Mar 2, 2017
+
+services: {
+    TFileService: {
+        fileName: "myAnalyzer.root"
+    }
+}
+
+process_name: MyAnalyzer
+
+source: {
+    module_type: RootInput
+    maxEvents  : -1
+}
+
+physics: {
+    analyzers: {
+        MyAnalyzer: {
+            module_type       :  MyAnalyzer
+        }
+    } // analyzers
+
+    paths    : [ MyAnalyzer ]
+    end_paths: [ paths ]
+}

@@ -1,0 +1,2 @@
+getdata.C从xtalEnergyRes.dat中读取数据并存储在XtalEnergyRes.root中的树（Tree）结构中
+draw.C从XtalEnergyRes.root中读取数据，并画出xtal energy response的Graph

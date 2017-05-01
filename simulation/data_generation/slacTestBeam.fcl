@@ -1,0 +1,158 @@
+// Make a one-calorimeter test beam
+
+#include "geom/world.fcl"
+#include "geom/station.fcl"
+#include "geom/calorimeter.fcl"
+#include "geom/PGA.fcl"
+#include "geom/g2GPS.fcl"
+
+
+process_name: testBeamSim
+
+source: {
+  module_type: EmptyEvent
+  maxEvents  : 10
+}
+
+services: {
+
+  message: {
+     debugModules: ["*"]
+     suppressInfo: []
+     
+     destinations: {
+       LogToConsole: {
+         type     : "cout"
+         threshold: "INFO"
+       }
+       LogToFile: {
+         type     : "file"
+         filename : "slacTestBeam.log"
+         append   : false
+         threshold: "INFO"
+       }
+     }
+  }
+
+  user: {
+  
+    // Mandatory ArtG4 services
+    DetectorHolder       : {}
+    ActionHolder         : {}
+    PhysicsListHolder    : {}
+    RandomNumberGenerator: {}
+    Gm2Constants         : {}
+    TurnCounter          : {}
+
+    // Create coordinate frames in the various straw tracker components and calorimeters
+    CoordSystemsStore : {}
+    
+    // Geometry
+    Geometry: {
+      world      : @local::world_geom
+      station    : @local::station_geom
+      calorimeter: @local::calorimeter_geom
+      pga        : @local::PGA_geom
+    }
+
+    // Global simulation settings
+    RunSettings: {
+      SpinTracking: {
+        spinTrackingEnabled: false
+      }
+    }
+
+    // Action(s) for the simulation
+    StackingAction: {  
+      name         : "stackingAction"
+      minWavelength: 250 // nm
+      maxWavelength: 950 // nm
+    }
+
+    physicalVolumeStore: {}
+    SLACPhysicsList: {
+      decayMode          : "iso"
+      physicsListName    : "QGSP_BIC_HP_PEN"
+//    physicsListName    : "FTFP_BERT"
+      cerenkovProcessMode: "tracking" // (tracking, lookup, comparison, none) 
+      setProductionCuts :true
+      cutTypes            : mid // (low, mid, high)
+   }
+
+    TrackingAction: {
+      name: "trackingAction"
+    }
+
+    ClockAction: {}
+
+    TestbeamParticleSource: {
+      particleType: "e-"
+      minEnergy      : 3.0 // GeV beam min energy
+      maxEnergy      : 3.0 // GeV beam max energy
+      direction   : [0.0, 0.0, 1.0] //e- inject from z axis
+      centralPosition    : [0.0, 12.55, -200.0] 
+      //centralPosition    : [-8.0, 12.55, -200.0] move right 8mm
+      //centralPosition    : [ 8.0, 12.55, -200.0] move left  8mm
+      xRange   :   0 // mm 
+      yRange   :   0 // mm 
+      startTime        : 200 //ns start inject time
+      minDeltaT : 0
+      maxDeltaT : 0
+      maxNParticles   : 1
+ }
+
+    // Detectors
+    World: {}
+    Calorimeter: {
+      killAllParticles  : false
+      killOpticalPhotons: false
+    }
+
+
+  } //end user
+} //end services
+
+outputs: {
+  out1: {
+    module_type: RootOutput   
+    fileName   : "slacTestBeam.root"
+  }
+}
+
+physics: {
+  producers: {
+    artg4: { 
+       module_type        : artg4Main
+       enableVisualization: false
+       macroPath          : ".:./macros:../macros:../../macros"
+       visMacro           : "vis.mac"
+       afterEvent         : pass  // (ui, pause, pass)
+     }
+
+  }
+
+  path1  : [ artg4 ]
+  stream1: [ out1 ]
+
+  trigger_paths: [ path1 ]
+  end_paths    : [ stream1 ]
+}
+
+services.user.Geometry.world.world_x: 300
+services.user.Geometry.world.world_y: 300
+services.user.Geometry.world.world_z: 300
+
+services.user.Calorimeter.mother_category: world
+services.user.Calorimeter.stationGeomName: station
+
+services.user.Geometry.calorimeter.nCalorimeters : 1
+services.user.Geometry.calorimeter.placeInStation: false
+
+// wrapping options: Tedlar, Millipore, Black, Diffuse, Open
+services.user.Geometry.calorimeter.sideWrapping : "Tedlar"
+services.user.Geometry.calorimeter.frontWrapping: "Tedlar"
+services.user.Geometry.calorimeter.backWrapping : "Tedlar"
+
+// optical coupling options: Nusil, Bicron
+services.user.Geometry.calorimeter.couplingMaterial    : "Nusil"
+services.user.Geometry.calorimeter.opticalCouplingDepth: 0.01 // cm
