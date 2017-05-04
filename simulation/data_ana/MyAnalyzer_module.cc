@@ -21,7 +21,7 @@
 //#include "gm2dataproducts/mc/calo/XtalPhotonArtRecord.hh"
 //#include "gm2dataproducts/mc/calo/PhotodetectorPhotonArtRecord.hh"
 //#include "gm2dataproducts/mc/calo/XtalArtRecord.hh"
-#include "gm2ringsim/calo/XtalPhotonArtRecord.hh" 
+#include "gm2ringsim/calo/XtalPhotonArtRecord.hh"
 #include "gm2ringsim/calo/PhotodetectorPhotonArtRecord.hh"
 #include "gm2ringsim/calo/XtalArtRecord.hh"
 
@@ -97,7 +97,7 @@ creationT_vs_arrivalT::creationT_vs_arrivalT(fhicl::ParameterSet const & p)
   }
 
   for(int i=0;i<3;i++){
-    h_creationT_vs_arrivalT[i]=histDir.make<TH2F>(Form("h_creationT_vs_arrivalT_%d",i+30),"",60,0,0.6,90,0,9);
+    h_creationT_vs_arrivalT[i]=histDir.make<TH2F>(Form("h_creationT_vs_arrivalT_%d",i+30),"",240,0,0.6,360,0,9);
     h_creationT_vs_arrivalT[i]->SetYTitle("arrival time [ns]");
     h_creationT_vs_arrivalT[i]->SetXTitle("creation time [ns]");
   }
