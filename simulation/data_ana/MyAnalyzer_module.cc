@@ -76,6 +76,10 @@ private:
   TH1F *h_z[3];//photon creation depth
   TH1F *h_speed[3];//photon creation depth divide the creation time
   TH2F *h_speed_z[3];//h_speed vs photon creation depth
+  TH1F *h_beamT[3];//beam arrive xtal time
+  TH2F *h_pdg;//pdg id for diff xtal
+  TH2F *h_arrivalT_vs_z[3];//photon arrival time vs creation depth
+  TH2F *h_creationT_vs_z[3];//photon creation time vs creation depth
 
   int Event=0;//the total events num
 };
@@ -141,6 +145,33 @@ creationT_vs_arrivalT::creationT_vs_arrivalT(fhicl::ParameterSet const & p)
     h_speed_z[i]->SetYTitle("z [mm]");
   }
 
+  for(int i=0;i<3;i++){
+    h_beamT[i]=histDir.make<TH1F>(Form("beam_time_#%d",i+30),"",100,0,1);
+    h_beamT[i]->SetXTitle("beam time [ns]");
+  }
+
+  h_pdg=histDir.make<TH2F>("pdg_id","",3,30,33,2,0,2);
+  h_pdg->SetTitle("pdg ID");
+  h_pdg->GetXaxis()->SetLabelSize(0.1);
+  h_pdg->GetXaxis()->SetBinLabel(1,"xtal#32");
+  h_pdg->GetXaxis()->SetBinLabel(2,"xtal#31");
+  h_pdg->GetXaxis()->SetBinLabel(3,"xtal#30");
+  h_pdg->GetYaxis()->SetLabelSize(0.1);
+  h_pdg->GetYaxis()->SetBinLabel(1,"e-");
+  h_pdg->GetYaxis()->SetBinLabel(2,"#gamma");
+
+  for(int i=0;i<3;i++){
+    h_arrivalT_vs_z[i]=histDir.make<TH2F>(Form("arrival_T_vs_depth_%d",i+30),"",140,0,140,360,0,9);
+    h_arrivalT_vs_z[i]->SetXTitle("depth [mm]");
+    h_arrivalT_vs_z[i]->SetYTitle("arrival time [ns]");
+  }
+
+  for(int i=0;i<3;i++){
+    h_creationT_vs_z[i]=histDir.make<TH2F>(Form("creation_T_vs_depth_%d",i+30),"",140,0,140,240,0,0.6);
+    h_creationT_vs_z[i]->SetXTitle("depth [mm]");
+    h_creationT_vs_z[i]->SetYTitle("creation time [ns]");
+  }
+
 }
 
 void creationT_vs_arrivalT::analyze(art::Event const & e)
@@ -169,6 +200,9 @@ void creationT_vs_arrivalT::analyze(art::Event const & e)
 
   vector<double> aT30,aT31,aT32,cT30,cT31,cT32; //use vector to store the arrival and creation time
   aT30.clear(); aT31.clear(); aT32.clear(); cT30.clear(); cT31.clear(); cT32.clear(); //clear the previous data before this event run
+
+  vector<double> z30,z31,z32;//use vector to store the photon creation depth
+  z30.clear();z31.clear();z32.clear();//clear the previous data before this event run
  
   double edep30=0,edep31=0,edep32=0;//the energy deposited in xtal #30 #31 #32 
   double t30=0,t31=0,t32=0;//the xtal hit time
@@ -237,6 +271,11 @@ void creationT_vs_arrivalT::analyze(art::Event const & e)
     if(xtalp.xtalNum==30&&xtalp.detected==1&&xtalp.transmitted==1) {cT30.push_back(xtalp.time-200.43);}
     if(xtalp.xtalNum==31&&xtalp.detected==1&&xtalp.transmitted==1) {cT31.push_back(xtalp.time-200.43);}
     if(xtalp.xtalNum==32&&xtalp.detected==1&&xtalp.transmitted==1) {cT32.push_back(xtalp.time-200.43);}
+
+    //get the creation depth using vector
+    if(xtalp.xtalNum==30&&xtalp.detected==1&&xtalp.transmitted==1) {z30.push_back(xtalp.depth);}
+    if(xtalp.xtalNum==31&&xtalp.detected==1&&xtalp.transmitted==1) {z31.push_back(xtalp.depth);}
+    if(xtalp.xtalNum==32&&xtalp.detected==1&&xtalp.transmitted==1) {z32.push_back(xtalp.depth);}
   }
 
   //print the creation photon num in this event 
@@ -245,36 +284,43 @@ void creationT_vs_arrivalT::analyze(art::Event const & e)
   //std::cout<<"the Num of creation Xtal #30 Photon is : "<<cTcount[1]<<std::endl;
   //std::cout<<"the Num of creation Xtal #30 Photon is : "<<cTcount[2]<<std::endl;  
 
-  //creation time vs arrival time #30
+  //creation time vs arrival time #30 (and depth)
   for(vector<double>::size_type i=0;i<aT30.size();i++){
     for(vector<double>::size_type j=0;j<cT30.size();j++){
-      if(i==j) {h_creationT_vs_arrivalT[0]->Fill(cT30[i],aT30[j]);}
+      if(i==j) {h_creationT_vs_arrivalT[0]->Fill(cT30[i],aT30[j]); h_arrivalT_vs_z[0]->Fill(z30[i],aT30[j]); h_creationT_vs_z[0]->Fill(z30[i],cT30[j]);}
     }
   }
 
-  //creation time vs arrival time #31
+  //creation time vs arrival time #31 (and depth)
   for(vector<double>::size_type i=0;i<aT31.size();i++){
     for(vector<double>::size_type j=0;j<cT31.size();j++){
-      if(i==j) {h_creationT_vs_arrivalT[1]->Fill(cT31[i],aT31[j]);}
+      if(i==j) {h_creationT_vs_arrivalT[1]->Fill(cT31[i],aT31[j]); h_arrivalT_vs_z[1]->Fill(z31[i],aT31[j]); h_creationT_vs_z[1]->Fill(z31[i],cT31[j]);}
     }
   }
 
-  //creation time vs arrival time #32
+  //creation time vs arrival time #32 (and depth)
   for(vector<double>::size_type i=0;i<aT32.size();i++){
     for(vector<double>::size_type j=0;j<cT32.size();j++){
-      if(i==j) {h_creationT_vs_arrivalT[2]->Fill(cT32[i],aT32[j]);}
+      if(i==j) {h_creationT_vs_arrivalT[2]->Fill(cT32[i],aT32[j]); h_arrivalT_vs_z[2]->Fill(z32[i],aT32[j]); h_creationT_vs_z[2]->Fill(z32[i],cT32[j]);}
     }
   }
 
   //xtal 
   for(auto xtal : XtalHits){
     //xtal deposited energy vs time
-    if(xtal.xtalNum==30) {edep30+=xtal.edep;t30=xtal.time;cout<<"edep30:"<<edep30<<endl;}
-    if(xtal.xtalNum==31) {edep31+=xtal.edep;t31=xtal.time;cout<<"edep31:"<<edep31<<endl;}
-    if(xtal.xtalNum==32) {edep32+=xtal.edep;t32=xtal.time;cout<<"edep32:"<<edep32<<endl;}      
+    if(xtal.xtalNum==30) {edep30+=xtal.edep;t30=xtal.time;h_beamT[0]->Fill(t30-200.43);}
+    if(xtal.xtalNum==31) {edep31+=xtal.edep;t31=xtal.time;h_beamT[1]->Fill(t31-200.43);}
+    if(xtal.xtalNum==32) {edep32+=xtal.edep;t32=xtal.time;h_beamT[2]->Fill(t32-200.43);}
+
+    //pdg id
+    if(xtal.xtalNum==30) {h_pdg->Fill(32,xtal.pdgID/11-1);}
+    if(xtal.xtalNum==31) {h_pdg->Fill(31,xtal.pdgID/11-1);}
+    if(xtal.xtalNum==32) {h_pdg->Fill(30,xtal.pdgID/11-1);}
+       
   }
-  cout<<"diff t:"<<t32-t30<<endl;
-  cout<<"diff e:"<<edep32-edep30<<endl; 
+  //xtal deposited energy vs time
+  //cout<<"diff t:"<<t32-t30<<endl;
+  //cout<<"diff e:"<<edep32-edep30<<endl; 
   h_deltaE_vs_deltaT->Fill(t32-t30,edep32-edep30);
   
 }
