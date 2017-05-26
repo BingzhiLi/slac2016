@@ -133,13 +133,13 @@ creationT_vs_arrivalT::creationT_vs_arrivalT(fhicl::ParameterSet const & p)
   }
 
   for(int i=0;i<3;i++){
-    h_speed[i]=histDir.make<TH1F>(Form("z/t_%d",i+30),"",110,0,1.1);
+    h_speed[i]=histDir.make<TH1F>(Form("z_divide_t_%d",i+30),"",110,0,1.1);
     h_speed[i]->SetXTitle("#frac{z [mm]}{t [ns]}");
     h_speed[i]->GetXaxis()->SetTitleOffset(1.2);
   }
 
   for(int i=0;i<3;i++){
-    h_speed_z[i]=histDir.make<TH2F>(Form("z/t_vs_z_%d",i+30),"",110,0,1.1,140,0,140);
+    h_speed_z[i]=histDir.make<TH2F>(Form("z_divide_t_vs_z_%d",i+30),"",110,0,1.1,140,0,140);
     h_speed_z[i]->SetXTitle("#frac{z [mm]}{t [ns]}");
     h_speed_z[i]->GetXaxis()->SetTitleOffset(1.2);
     h_speed_z[i]->SetYTitle("z [mm]");
