@@ -96,7 +96,7 @@ creationT_vs_arrivalT::creationT_vs_arrivalT(fhicl::ParameterSet const & p)
   art::TFileDirectory histDir = *tfs;
 
   for(int i=0;i<3;i++){
-    h_arrivalT[i]=histDir.make<TH1F>(Form("photon_arrival_time_#%d",i+30),"",200,0.4,2.4);
+    h_arrivalT[i]=histDir.make<TH1F>(Form("photon_arrival_time_%d",i+30),"",200,0.4,2.4);
     h_arrivalT[i]->SetXTitle("time [ns]");
   }
 
@@ -106,47 +106,47 @@ creationT_vs_arrivalT::creationT_vs_arrivalT(fhicl::ParameterSet const & p)
     h_creationT_vs_arrivalT[i]->SetXTitle("creation time [ns]");
   }
 
-  h_deltaE_vs_deltaT=histDir.make<TH2F>("deltaE_vs_deltaT_#32#30","",160,-2,2,200,-500,500);
+  h_deltaE_vs_deltaT=histDir.make<TH2F>("deltaE_vs_deltaT_32_30","",160,-2,2,200,-500,500);
   h_deltaE_vs_deltaT->SetYTitle("#Delta E");
   h_deltaE_vs_deltaT->SetXTitle("#Delta T");
 
   for(int i=0;i<3;i++){
-    h_cos_theta[i]=histDir.make<TH1F>(Form("cos#theta_%d",i+30),"",100,-1,1);
+    h_cos_theta[i]=histDir.make<TH1F>(Form("costheta_%d",i+30),"",100,-1,1);
     h_cos_theta[i]->SetXTitle("cos#theta");
   }
 
   for(int i=0;i<3;i++){
-    h_xy[i]=histDir.make<TH2F>(Form("photon_shower_xy_#%d",i+30),"",250,-12.5,12.5,250,-12.5,12.5);
+    h_xy[i]=histDir.make<TH2F>(Form("photon_shower_xy_%d",i+30),"",250,-12.5,12.5,250,-12.5,12.5);
     h_xy[i]->SetYTitle("y [mm]");
     h_xy[i]->SetXTitle("x [mm]");
   }
 
   for(int i=0;i<3;i++){
-    h_xz[i]=histDir.make<TH2F>(Form("photon_shower_xz_#%d",i+30),"",250,-12.5,12.5,140,0,140);
+    h_xz[i]=histDir.make<TH2F>(Form("photon_shower_xz_%d",i+30),"",250,-12.5,12.5,140,0,140);
     h_xz[i]->SetYTitle("z [mm]");
     h_xz[i]->SetXTitle("x [mm]");
   }
 
   for(int i=0;i<3;i++){
-    h_z[i]=histDir.make<TH1F>(Form("photon_shower_depth_#%d",i+30),"",140,0,140);
+    h_z[i]=histDir.make<TH1F>(Form("photon_shower_depth_%d",i+30),"",140,0,140);
     h_z[i]->SetXTitle("x [mm]");
   }
 
   for(int i=0;i<3;i++){
-    h_speed[i]=histDir.make<TH1F>(Form("z/t_#%d",i+30),"",110,0,1.1);
+    h_speed[i]=histDir.make<TH1F>(Form("z/t_%d",i+30),"",110,0,1.1);
     h_speed[i]->SetXTitle("#frac{z [mm]}{t [ns]}");
     h_speed[i]->GetXaxis()->SetTitleOffset(1.2);
   }
 
   for(int i=0;i<3;i++){
-    h_speed_z[i]=histDir.make<TH2F>(Form("z/t_vs_z_#%d",i+30),"",110,0,1.1,140,0,140);
+    h_speed_z[i]=histDir.make<TH2F>(Form("z/t_vs_z_%d",i+30),"",110,0,1.1,140,0,140);
     h_speed_z[i]->SetXTitle("#frac{z [mm]}{t [ns]}");
     h_speed_z[i]->GetXaxis()->SetTitleOffset(1.2);
     h_speed_z[i]->SetYTitle("z [mm]");
   }
 
   for(int i=0;i<3;i++){
-    h_beamT[i]=histDir.make<TH1F>(Form("beam_time_#%d",i+30),"",100,0,1);
+    h_beamT[i]=histDir.make<TH1F>(Form("beam_time_%d",i+30),"",100,0,1);
     h_beamT[i]->SetXTitle("beam time [ns]");
   }
 
