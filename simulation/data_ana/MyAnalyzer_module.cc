@@ -81,6 +81,9 @@ private:
   TH2F *h_arrivalT_vs_z[3];//photon arrival time vs creation depth
   TH2F *h_creationT_vs_z[3];//photon creation time vs creation depth
 
+  TH2F *h_cos_theta_vs_cT[3];
+  TH2F *h_cos_theta_vs_aT[3];
+
   int Event=0;//the total events num
 };
 
@@ -172,6 +175,18 @@ creationT_vs_arrivalT::creationT_vs_arrivalT(fhicl::ParameterSet const & p)
     h_creationT_vs_z[i]->SetYTitle("creation time [ns]");
   }
 
+  for(int i=0;i<3;i++){
+    h_cos_theta_vs_cT[i]=histDir.make<TH2F>(Form("creation_T_vs_cos_%d",i+30),"",50,-1,1,240,0,0.6);
+    h_cos_theta_vs_cT[i]->SetXTitle("cos#theta");
+    h_cos_theta_vs_cT[i]->SetYTitle("creation time [ns]");
+  }
+
+  for(int i=0;i<3;i++){
+    h_cos_theta_vs_aT[i]=histDir.make<TH2F>(Form("arrival_T_vs_cos_%d",i+30),"",50,-1,1,360,0,9);
+    h_cos_theta_vs_aT[i]->SetXTitle("cos#theta");
+    h_cos_theta_vs_aT[i]->SetYTitle("arrival time [ns]");
+  } 
+
 }
 
 void creationT_vs_arrivalT::analyze(art::Event const & e)
@@ -203,6 +218,9 @@ void creationT_vs_arrivalT::analyze(art::Event const & e)
 
   vector<double> z30,z31,z32;//use vector to store the photon creation depth
   z30.clear();z31.clear();z32.clear();//clear the previous data before this event run
+
+  vector<double> cos30,cos31,cos32;//use vector to store the photon creation cos angle
+  cos30.clear();cos31.clear();cos32.clear();//clear the previous data before the event run
  
   double edep30=0,edep31=0,edep32=0;//the energy deposited in xtal #30 #31 #32 
   double t30=0,t31=0,t32=0;//the xtal hit time
@@ -243,9 +261,9 @@ void creationT_vs_arrivalT::analyze(art::Event const & e)
     if(xtalp.xtalNum==32&&xtalp.detected==1&&xtalp.transmitted==1) {h_xz[2]->Fill(-xtalp.x,xtalp.depth);}
 
     //cos theta
-    if(xtalp.xtalNum==30&&xtalp.detected==1&&xtalp.transmitted==1) {h_cos_theta[0]->Fill(xtalp.costheta);}
-    if(xtalp.xtalNum==31&&xtalp.detected==1&&xtalp.transmitted==1) {h_cos_theta[1]->Fill(xtalp.costheta);}
-    if(xtalp.xtalNum==32&&xtalp.detected==1&&xtalp.transmitted==1) {h_cos_theta[2]->Fill(xtalp.costheta);}
+    if(xtalp.xtalNum==30&&xtalp.detected==1&&xtalp.transmitted==1) {h_cos_theta[0]->Fill(xtalp.costheta);cos30.push_back(xtalp.costheta);}
+    if(xtalp.xtalNum==31&&xtalp.detected==1&&xtalp.transmitted==1) {h_cos_theta[1]->Fill(xtalp.costheta);cos31.push_back(xtalp.costheta);}
+    if(xtalp.xtalNum==32&&xtalp.detected==1&&xtalp.transmitted==1) {h_cos_theta[2]->Fill(xtalp.costheta);cos32.push_back(xtalp.costheta);}
  
     //depth
     if(xtalp.xtalNum==30&&xtalp.detected==1&&xtalp.transmitted==1) {h_z[0]->Fill(xtalp.depth);}
@@ -287,21 +305,21 @@ void creationT_vs_arrivalT::analyze(art::Event const & e)
   //creation time vs arrival time #30 (and depth)
   for(vector<double>::size_type i=0;i<aT30.size();i++){
     for(vector<double>::size_type j=0;j<cT30.size();j++){
-      if(i==j) {h_creationT_vs_arrivalT[0]->Fill(cT30[i],aT30[j]); h_arrivalT_vs_z[0]->Fill(z30[i],aT30[j]); h_creationT_vs_z[0]->Fill(z30[i],cT30[j]);}
+      if(i==j) {h_creationT_vs_arrivalT[0]->Fill(cT30[i],aT30[j]); h_arrivalT_vs_z[0]->Fill(z30[i],aT30[j]); h_creationT_vs_z[0]->Fill(z30[i],cT30[j]); h_cos_theta_vs_cT[0]->Fill(cos30[i],cT30[i]); h_cos_theta_vs_aT[0]->Fill(cos30[i],aT30[i]);}
     }
   }
 
   //creation time vs arrival time #31 (and depth)
   for(vector<double>::size_type i=0;i<aT31.size();i++){
     for(vector<double>::size_type j=0;j<cT31.size();j++){
-      if(i==j) {h_creationT_vs_arrivalT[1]->Fill(cT31[i],aT31[j]); h_arrivalT_vs_z[1]->Fill(z31[i],aT31[j]); h_creationT_vs_z[1]->Fill(z31[i],cT31[j]);}
+      if(i==j) {h_creationT_vs_arrivalT[1]->Fill(cT31[i],aT31[j]); h_arrivalT_vs_z[1]->Fill(z31[i],aT31[j]); h_creationT_vs_z[1]->Fill(z31[i],cT31[j]); h_cos_theta_vs_cT[1]->Fill(cos31[i],cT31[i]); h_cos_theta_vs_aT[1]->Fill(cos31[i],aT31[i]);}
     }
   }
 
   //creation time vs arrival time #32 (and depth)
   for(vector<double>::size_type i=0;i<aT32.size();i++){
     for(vector<double>::size_type j=0;j<cT32.size();j++){
-      if(i==j) {h_creationT_vs_arrivalT[2]->Fill(cT32[i],aT32[j]); h_arrivalT_vs_z[2]->Fill(z32[i],aT32[j]); h_creationT_vs_z[2]->Fill(z32[i],cT32[j]);}
+      if(i==j) {h_creationT_vs_arrivalT[2]->Fill(cT32[i],aT32[j]); h_arrivalT_vs_z[2]->Fill(z32[i],aT32[j]); h_creationT_vs_z[2]->Fill(z32[i],cT32[j]);h_cos_theta_vs_cT[2]->Fill(cos32[i],cT32[i]); h_cos_theta_vs_aT[2]->Fill(cos32[i],aT32[i]);}
     }
   }
 
